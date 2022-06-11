@@ -1,0 +1,259 @@
+[gd_scene load_steps=3 format=3 uid="uid://d21s6rtexlq5o"]
+
+[ext_resource type="Script" path="res://Main.gd" id="1_xbpis"]
+[ext_resource type="PackedScene" uid="uid://b4mjn652yw8ya" path="res://Item.tscn" id="2_qkmer"]
+
+[node name="Main" type="HBoxContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/separation = 16
+script = ExtResource( "1_xbpis" )
+metadata/_edit_lock_ = true
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="."]
+offset_right = 400.0
+offset_bottom = 800.0
+
+[node name="Label" type="Label" parent="VBoxContainer2"]
+offset_right = 400.0
+offset_bottom = 26.0
+text = "File List"
+horizontal_alignment = 1
+
+[node name="Button" type="Button" parent="VBoxContainer2"]
+offset_top = 30.0
+offset_right = 400.0
+offset_bottom = 61.0
+text = "Refresh"
+
+[node name="Button2" type="Button" parent="VBoxContainer2"]
+offset_top = 65.0
+offset_right = 400.0
+offset_bottom = 96.0
+text = "Next Empty"
+
+[node name="Button3" type="Button" parent="VBoxContainer2"]
+offset_top = 100.0
+offset_right = 400.0
+offset_bottom = 131.0
+text = "Next Unfinished"
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer2"]
+offset_top = 135.0
+offset_right = 400.0
+offset_bottom = 139.0
+
+[node name="FileTree" type="Tree" parent="VBoxContainer2"]
+unique_name_in_owner = true
+minimum_size = Vector2(400, 0)
+offset_top = 143.0
+offset_right = 400.0
+offset_bottom = 800.0
+size_flags_vertical = 3
+hide_root = true
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+offset_left = 416.0
+offset_right = 1600.0
+offset_bottom = 800.0
+size_flags_horizontal = 3
+
+[node name="Contentainer" type="ScrollContainer" parent="PanelContainer"]
+unique_name_in_owner = true
+offset_right = 1184.0
+offset_bottom = 800.0
+size_flags_horizontal = 3
+vertical_scroll_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/Contentainer"]
+offset_right = 1176.0
+offset_bottom = 626.0
+size_flags_horizontal = 3
+
+[node name="Title" type="Label" parent="PanelContainer/Contentainer/VBoxContainer"]
+unique_name_in_owner = true
+offset_right = 1176.0
+offset_bottom = 45.0
+theme_override_font_sizes/font_size = 30
+text = "Class Name"
+horizontal_alignment = 1
+
+[node name="Label2" type="Label" parent="PanelContainer/Contentainer/VBoxContainer"]
+offset_top = 49.0
+offset_right = 1176.0
+offset_bottom = 86.0
+theme_override_font_sizes/font_size = 24
+text = "Brief Description"
+horizontal_alignment = 1
+
+[node name="BriefDescription" parent="PanelContainer/Contentainer/VBoxContainer" instance=ExtResource( "2_qkmer" )]
+unique_name_in_owner = true
+offset_top = 90.0
+offset_right = 1176.0
+offset_bottom = 167.0
+
+[node name="Label3" type="Label" parent="PanelContainer/Contentainer/VBoxContainer"]
+offset_top = 171.0
+offset_right = 1176.0
+offset_bottom = 208.0
+theme_override_font_sizes/font_size = 24
+text = "Description"
+horizontal_alignment = 1
+
+[node name="Description" parent="PanelContainer/Contentainer/VBoxContainer" instance=ExtResource( "2_qkmer" )]
+unique_name_in_owner = true
+offset_top = 212.0
+offset_right = 1176.0
+offset_bottom = 289.0
+
+[node name="Label4" type="Label" parent="PanelContainer/Contentainer/VBoxContainer"]
+offset_top = 293.0
+offset_right = 1176.0
+offset_bottom = 330.0
+theme_override_font_sizes/font_size = 24
+text = "Tutorials"
+horizontal_alignment = 1
+
+[node name="Tutorials" type="VBoxContainer" parent="PanelContainer/Contentainer/VBoxContainer"]
+unique_name_in_owner = true
+offset_top = 334.0
+offset_right = 1176.0
+offset_bottom = 334.0
+
+[node name="HSeparator" type="HSeparator" parent="PanelContainer/Contentainer/VBoxContainer"]
+offset_top = 338.0
+offset_right = 1176.0
+offset_bottom = 342.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/Contentainer/VBoxContainer"]
+offset_top = 346.0
+offset_right = 1176.0
+offset_bottom = 377.0
+alignment = 1
+
+[node name="Button" type="Button" parent="PanelContainer/Contentainer/VBoxContainer/HBoxContainer"]
+offset_left = 445.0
+offset_right = 544.0
+offset_bottom = 31.0
+text = "Next Empty"
+
+[node name="VSeparator" type="VSeparator" parent="PanelContainer/Contentainer/VBoxContainer/HBoxContainer"]
+offset_left = 548.0
+offset_right = 552.0
+offset_bottom = 31.0
+
+[node name="Button2" type="Button" parent="PanelContainer/Contentainer/VBoxContainer/HBoxContainer"]
+offset_left = 556.0
+offset_right = 574.0
+offset_bottom = 31.0
+text = "b"
+
+[node name="Button3" type="Button" parent="PanelContainer/Contentainer/VBoxContainer/HBoxContainer"]
+offset_left = 578.0
+offset_right = 591.0
+offset_bottom = 31.0
+text = "i"
+
+[node name="Button4" type="Button" parent="PanelContainer/Contentainer/VBoxContainer/HBoxContainer"]
+offset_left = 595.0
+offset_right = 640.0
+offset_bottom = 31.0
+text = "code"
+
+[node name="Button5" type="Button" parent="PanelContainer/Contentainer/VBoxContainer/HBoxContainer"]
+offset_left = 644.0
+offset_right = 731.0
+offset_bottom = 31.0
+text = "codeblock"
+
+[node name="Control" type="Control" parent="PanelContainer/Contentainer/VBoxContainer"]
+minimum_size = Vector2(0, 20)
+offset_top = 381.0
+offset_right = 1176.0
+offset_bottom = 401.0
+
+[node name="Label9" type="Label" parent="PanelContainer/Contentainer/VBoxContainer"]
+offset_top = 405.0
+offset_right = 1176.0
+offset_bottom = 442.0
+theme_override_font_sizes/font_size = 24
+text = "Methods"
+horizontal_alignment = 1
+
+[node name="Methods" type="VBoxContainer" parent="PanelContainer/Contentainer/VBoxContainer"]
+unique_name_in_owner = true
+offset_top = 446.0
+offset_right = 1176.0
+offset_bottom = 446.0
+
+[node name="Label5" type="Label" parent="PanelContainer/Contentainer/VBoxContainer"]
+offset_top = 450.0
+offset_right = 1176.0
+offset_bottom = 487.0
+theme_override_font_sizes/font_size = 24
+text = "Members"
+horizontal_alignment = 1
+
+[node name="Members" type="VBoxContainer" parent="PanelContainer/Contentainer/VBoxContainer"]
+unique_name_in_owner = true
+offset_top = 491.0
+offset_right = 1176.0
+offset_bottom = 491.0
+
+[node name="Label7" type="Label" parent="PanelContainer/Contentainer/VBoxContainer"]
+offset_top = 495.0
+offset_right = 1176.0
+offset_bottom = 532.0
+theme_override_font_sizes/font_size = 24
+text = "Signals"
+horizontal_alignment = 1
+
+[node name="Signals" type="VBoxContainer" parent="PanelContainer/Contentainer/VBoxContainer"]
+unique_name_in_owner = true
+offset_top = 536.0
+offset_right = 1176.0
+offset_bottom = 536.0
+
+[node name="Label6" type="Label" parent="PanelContainer/Contentainer/VBoxContainer"]
+offset_top = 540.0
+offset_right = 1176.0
+offset_bottom = 577.0
+theme_override_font_sizes/font_size = 24
+text = "Constants"
+horizontal_alignment = 1
+
+[node name="Constants" type="VBoxContainer" parent="PanelContainer/Contentainer/VBoxContainer"]
+unique_name_in_owner = true
+offset_top = 581.0
+offset_right = 1176.0
+offset_bottom = 581.0
+
+[node name="Label8" type="Label" parent="PanelContainer/Contentainer/VBoxContainer"]
+offset_top = 585.0
+offset_right = 1176.0
+offset_bottom = 622.0
+theme_override_font_sizes/font_size = 24
+text = "Theme Items"
+horizontal_alignment = 1
+
+[node name="ThemeItems" type="VBoxContainer" parent="PanelContainer/Contentainer/VBoxContainer"]
+unique_name_in_owner = true
+offset_top = 626.0
+offset_right = 1176.0
+offset_bottom = 626.0
+
+[node name="FileDialog" type="FileDialog" parent="."]
+unique_name_in_owner = true
+title = "Open a Directory"
+file_mode = 2
+access = 2
+
+[node name="AcceptDialog" type="AcceptDialog" parent="."]
+unique_name_in_owner = true
+size = Vector2i(249, 100)
+dialog_text = "Select Godot source directory."
+
+[connection signal="pressed" from="VBoxContainer2/Button" to="." method="refresh_files"]
+[connection signal="item_selected" from="VBoxContainer2/FileTree" to="." method="doc_selected"]
+[connection signal="dir_selected" from="FileDialog" to="." method="on_dir_selected"]
+[connection signal="visibility_changed" from="AcceptDialog" to="." method="accept_closed"]

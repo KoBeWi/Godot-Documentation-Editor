@@ -1,0 +1,20 @@
+[gd_scene load_steps=2 format=3 uid="uid://b4mjn652yw8ya"]
+
+[ext_resource type="Script" path="res://Item.gd" id="1_5voqr"]
+
+[node name="Item" type="VBoxContainer"]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource( "1_5voqr" )
+
+[node name="Label" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+
+[node name="Description" type="TextEdit" parent="."]
+minimum_size = Vector2(0, 50)
+offset_top = 27.0
+offset_right = 40.0
+offset_bottom = 77.0
+wrap_mode = 1
