@@ -89,11 +89,15 @@ func doc_selected() -> void:
 						data.type = xml.get_attribute_value(0)
 					"brief_description", "description":
 						is_reading = true
-					"method", "member", "signal", "constant", "theme_item":
+					"method", "member", "signal", "constant", "theme_item", "operator":
 						inside_member = "%s/%s" % [xml.get_node_name(), xml.get_attribute_value(0)]
 			XMLParser.NODE_TEXT:
 				if is_reading:
-					text.append(xml.get_node_data().strip_edges())
+					var node_text := xml.get_node_data().split("\n")
+					var dedented_text: PackedStringArray
+					for line in node_text:
+						dedented_text.append(line.dedent().dedent().dedent().dedent())
+					text.append("".join(dedented_text))
 			XMLParser.NODE_ELEMENT_END:
 				match xml.get_node_name():
 					"brief_description":
@@ -128,6 +132,7 @@ func doc_selected() -> void:
 	
 	fill_items("method", %Methods)
 	fill_items("member", %Members)
+	fill_items("operator", %Operators)
 	fill_items("signal", %Signals)
 	fill_items("constant", %Constants)
 	fill_items("theme_items", %ThemeItems)
@@ -136,7 +141,13 @@ func fill_items(category: String, container: Node):
 	for child in container.get_children():
 		child.queue_free()
 	
-	for item_name in data.get(category, {}):
-		var item := preload("res://Item.tscn").instantiate()
-		item.set_item(item_name, data[category][item_name])
-		container.add_child(item)
+	var header := container.get_parent().get_child(container.get_index() - 1)
+	if data.get(category, {}).is_empty():
+		header.hide()
+	else:
+		header.show()
+		
+		for item_name in data[category]:
+			var item := preload("res://Item.tscn").instantiate()
+			item.set_item(item_name, data[category][item_name])
+			container.add_child(item)
