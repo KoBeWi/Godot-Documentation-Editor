@@ -9,9 +9,12 @@ const CONFIG_PATH = "user://config.cfg"
 var godot_path: String
 
 var data: Dictionary
+var file_cache: Array[String]
 
 func _ready() -> void:
 	%Contentainer.hide()
+	%BriefDescription.connect_changed($SaveTimer.start)
+	%Description.connect_changed($SaveTimer.start)
 	
 	var config := ConfigFile.new()
 	if config.load(CONFIG_PATH) != OK:
@@ -68,15 +71,20 @@ func add_files(directory: String):
 		add_files(dir.get_current_dir().plus_file(dir2))
 
 func doc_selected() -> void:
+	save_current()
+	
 	var file := file_tree.get_selected().get_metadata(0) as String
 	if file.is_empty():
 		return
+	
+	var f := File.new()
+	f.open(file, File.READ)
+	file_cache = Array(f.get_as_text().split("\n"))
 	
 	data.clear()
 	var xml := XMLParser.new()
 	xml.open(file)
 	
-	var is_reading: bool
 	var inside_member: String
 	var finish_text: String
 	var text: PackedStringArray
@@ -87,22 +95,32 @@ func doc_selected() -> void:
 				match xml.get_node_name():
 					"class":
 						data.type = xml.get_attribute_value(0)
-					"brief_description", "description":
-						is_reading = true
 					"method", "member", "signal", "constant", "theme_item", "operator":
 						inside_member = "%s/%s" % [xml.get_node_name(), xml.get_attribute_value(0)]
 			XMLParser.NODE_TEXT:
-				if is_reading:
-					var node_text := xml.get_node_data().split("\n")
-					var dedented_text: PackedStringArray
-					for line in node_text:
-						dedented_text.append(line.dedent().dedent().dedent().dedent())
-					text.append("".join(dedented_text))
+				var node_text := xml.get_node_data().split("\n")
+				
+				var dedented_text := Array(node_text) as Array[String]
+				dedented_text = dedented_text.slice(1, max(dedented_text.size() - 1, 1))
+				
+				if not dedented_text.is_empty():
+					var min_tabs: int = 999
+					for line in dedented_text:
+						if not line.is_empty():
+							min_tabs = min(min_tabs, line.count("\t"))
+					
+					var prefix := ""
+					for i in min_tabs:
+						prefix += "\t"
+					
+					dedented_text = dedented_text.map(func(line: String): return line.trim_prefix(prefix))
+					
+					text.append("\n".join(PackedStringArray(dedented_text)))
 			XMLParser.NODE_ELEMENT_END:
 				match xml.get_node_name():
 					"brief_description":
 						finish_text = "brief_description"
-					"description":
+					"description", "member", "theme_item":
 						if inside_member.is_empty():
 							finish_text = "description"
 						else:
@@ -120,7 +138,6 @@ func doc_selected() -> void:
 				
 				data[category][finish_text.get_slice("/", 1)] = final_text
 			
-			is_reading = false
 			text.resize(0)
 			finish_text = ""
 	
@@ -135,7 +152,7 @@ func doc_selected() -> void:
 	fill_items("operator", %Operators)
 	fill_items("signal", %Signals)
 	fill_items("constant", %Constants)
-	fill_items("theme_items", %ThemeItems)
+	fill_items("theme_item", %ThemeItems)
 
 func fill_items(category: String, container: Node):
 	for child in container.get_children():
@@ -149,5 +166,9 @@ func fill_items(category: String, container: Node):
 		
 		for item_name in data[category]:
 			var item := preload("res://Item.tscn").instantiate()
+			item.connect_changed($SaveTimer.start)
 			item.set_item(item_name, data[category][item_name])
 			container.add_child(item)
+
+func save_current() -> void:
+	print("save")
