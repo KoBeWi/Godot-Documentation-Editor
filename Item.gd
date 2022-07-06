@@ -1,5 +1,12 @@
 extends Control
 
+var member
+
+func set_member(m):
+	member = m
+	$Description.text_changed.connect(update_member)
+	set_item(m.name, m.description)
+
 func set_item(item: String, description: String):
 	if item.is_empty():
 		%Label.hide()
@@ -19,3 +26,6 @@ func refresh_color():
 
 func connect_changed(target: Callable):
 	$Description.text_changed.connect(target)
+
+func update_member():
+	member.description = $Description.text

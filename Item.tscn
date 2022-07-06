@@ -24,6 +24,6 @@ offset_top = 27.0
 offset_right = 51.0
 offset_bottom = 62.0
 wrap_mode = 1
-vertical_scroll_enabled = false
+scroll_fit_content_height = true
 
 [connection signal="text_changed" from="Description" to="." method="refresh_color"]

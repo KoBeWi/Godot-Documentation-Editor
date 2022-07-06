@@ -8,7 +8,9 @@ const CONFIG_PATH = "user://config.cfg"
 
 var godot_path: String
 
-var data: Dictionary
+var current_file: String
+var data: ClassData
+var current_member: ClassData.MemberData
 var file_cache: Array[String]
 
 func _ready() -> void:
@@ -77,15 +79,16 @@ func doc_selected() -> void:
 	if file.is_empty():
 		return
 	
+	current_file = file
+	
 	var f := File.new()
 	f.open(file, File.READ)
 	file_cache = Array(f.get_as_text().split("\n"))
 	
-	data.clear()
+	data = ClassData.new()
 	var xml := XMLParser.new()
 	xml.open(file)
 	
-	var inside_member: String
 	var finish_text: String
 	var text: PackedStringArray
 	
@@ -94,9 +97,16 @@ func doc_selected() -> void:
 			XMLParser.NODE_ELEMENT:
 				match xml.get_node_name():
 					"class":
-						data.type = xml.get_attribute_value(0)
+						data.name = xml.get_attribute_value(0)
 					"method", "member", "signal", "constant", "theme_item", "operator":
-						inside_member = "%s/%s" % [xml.get_node_name(), xml.get_attribute_value(0)]
+						if current_member:
+							current_member.line_range.y = xml.get_current_line() - 1
+							data.members.append(current_member)
+						
+						current_member = ClassData.MemberData.new()
+						current_member.category = xml.get_node_name()
+						current_member.name = xml.get_attribute_value(0)
+						current_member.line_range.x = xml.get_current_line() + 1
 			XMLParser.NODE_TEXT:
 				var node_text := xml.get_node_data().split("\n")
 				
@@ -121,29 +131,27 @@ func doc_selected() -> void:
 					"brief_description":
 						finish_text = "brief_description"
 					"description", "member", "theme_item":
-						if inside_member.is_empty():
-							finish_text = "description"
+						if current_member:
+							finish_text = current_member.name
 						else:
-							finish_text = inside_member
+							finish_text = "description"
 		
 		if not finish_text.is_empty():
 			var final_text := "\n".join(text)
 			
-			if finish_text.get_slice_count("/") == 1:
-				data[finish_text] = final_text
+			if finish_text == "brief_description":
+				data.brief_description = final_text
+			elif finish_text == "description":
+				data.description = final_text
 			else:
-				var category := finish_text.get_slice("/", 0)
-				if not category in data:
-					data[category] = {}
-				
-				data[category][finish_text.get_slice("/", 1)] = final_text
+				current_member.description = final_text
 			
 			text.resize(0)
 			finish_text = ""
 	
 	%Contentainer.show()
 	
-	%Title.text = data.type
+	%Title.text = data.name
 	%Description.set_item("", data.description)
 	%BriefDescription.set_item("", data.brief_description)
 	
@@ -158,17 +166,44 @@ func fill_items(category: String, container: Node):
 	for child in container.get_children():
 		child.queue_free()
 	
+	var items_in_category := data.members.filter(func(member): return member.category == category)
 	var header := container.get_parent().get_child(container.get_index() - 1)
-	if data.get(category, {}).is_empty():
+	if items_in_category.is_empty():
 		header.hide()
 	else:
 		header.show()
 		
-		for item_name in data[category]:
+		for member_data in items_in_category:
 			var item := preload("res://Item.tscn").instantiate()
 			item.connect_changed($SaveTimer.start)
-			item.set_item(item_name, data[category][item_name])
+			item.set_member(member_data)
 			container.add_child(item)
 
 func save_current() -> void:
-	print("save")
+	if current_file.is_empty():
+		return
+	
+	for member in data.members:
+		file_cache[member.line_range.x] = member.description
+	
+	var file := File.new()
+	file.open(current_file, File.WRITE)
+	file.store_string("\n".join(PackedStringArray(file_cache)))
+
+func _exit_tree() -> void:
+	save_current()
+
+class ClassData:
+	var name: String
+	var brief_description: String
+	var description: String
+	var members: Array[MemberData]
+	
+	class MemberData:
+		var category: String
+		var name: String
+		var description: String
+		var line_range: Vector2i
+		
+		func _to_string() -> String:
+			return str(category, "/", name)
