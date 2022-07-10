@@ -91,6 +91,7 @@ func doc_selected() -> void:
 	
 	var finish_text: String
 	var text: PackedStringArray
+	var min_tabs: int
 	
 	while xml.read() != ERR_FILE_EOF:
 		match xml.get_node_type():
@@ -99,14 +100,23 @@ func doc_selected() -> void:
 					"class":
 						data.name = xml.get_attribute_value(0)
 					"method", "member", "signal", "constant", "theme_item", "operator":
-						if current_member:
-							current_member.line_range.y = xml.get_current_line() - 1
-							data.members.append(current_member)
+						var skip: bool
+						for i in xml.get_attribute_count():
+							if xml.get_attribute_name(i) == "overrides":
+								skip = true
+								break
+						
+						if skip:
+							continue
 						
 						current_member = ClassData.MemberData.new()
 						current_member.category = xml.get_node_name()
 						current_member.name = xml.get_attribute_value(0)
 						current_member.line_range.x = xml.get_current_line() + 1
+					"description":
+						min_tabs = 99
+						if current_member:
+							current_member.line_range.x = xml.get_current_line() + 1
 			XMLParser.NODE_TEXT:
 				var node_text := xml.get_node_data().split("\n")
 				
@@ -114,17 +124,11 @@ func doc_selected() -> void:
 				dedented_text = dedented_text.slice(1, max(dedented_text.size() - 1, 1))
 				
 				if not dedented_text.is_empty():
-					var min_tabs: int = 999
 					for line in dedented_text:
 						if not line.is_empty():
 							min_tabs = min(min_tabs, line.count("\t"))
 					
-					var prefix := ""
-					for i in min_tabs:
-						prefix += "\t"
-					
-					dedented_text = dedented_text.map(func(line: String): return line.trim_prefix(prefix))
-					
+					dedented_text = dedented_text.map(func(line: String): return line.trim_prefix("\t".repeat(min_tabs)))
 					text.append("\n".join(PackedStringArray(dedented_text)))
 			XMLParser.NODE_ELEMENT_END:
 				match xml.get_node_name():
@@ -133,6 +137,8 @@ func doc_selected() -> void:
 					"description", "member", "theme_item":
 						if current_member:
 							finish_text = current_member.name
+							current_member.line_range.y = xml.get_current_line()
+							data.members.append(current_member)
 						else:
 							finish_text = "description"
 		
@@ -145,9 +151,11 @@ func doc_selected() -> void:
 				data.description = final_text
 			else:
 				current_member.description = final_text
+				current_member.description_tabs = min_tabs
 			
 			text.resize(0)
 			finish_text = ""
+			current_member = null
 	
 	%Contentainer.show()
 	
@@ -184,7 +192,8 @@ func save_current() -> void:
 		return
 	
 	for member in data.members:
-		file_cache[member.line_range.x] = member.description
+		if not member.description.is_empty():
+			file_cache[member.line_range.x] = "\t".repeat(member.description_tabs) + member.description
 	
 	var file := File.new()
 	file.open(current_file, File.WRITE)
@@ -203,6 +212,7 @@ class ClassData:
 		var category: String
 		var name: String
 		var description: String
+		var description_tabs: int
 		var line_range: Vector2i
 		
 		func _to_string() -> String:
