@@ -91,7 +91,7 @@ func doc_selected() -> void:
 	
 	var finish_text: String
 	var text: PackedStringArray
-	var min_tabs: int
+	var tabs: int
 	
 	while xml.read() != ERR_FILE_EOF:
 		match xml.get_node_type():
@@ -100,6 +100,7 @@ func doc_selected() -> void:
 					"class":
 						data.name = xml.get_attribute_value(0)
 					"method", "member", "signal", "constant", "theme_item", "operator":
+						tabs = file_cache[xml.get_current_line()].count("\t") + 1
 						var skip: bool
 						for i in xml.get_attribute_count():
 							if xml.get_attribute_name(i) == "overrides":
@@ -114,8 +115,9 @@ func doc_selected() -> void:
 						current_member.name = xml.get_attribute_value(0)
 						current_member.line_range.x = xml.get_current_line() + 1
 					"description":
-						min_tabs = 99
+						tabs = file_cache[xml.get_current_line() - 1].count("\t") + 1
 						if current_member:
+#							prints(current_member.name, tabs, xml.get_current_line()) ## FIXME: why this is wrong ;_;
 							current_member.line_range.x = xml.get_current_line() + 1
 			XMLParser.NODE_TEXT:
 				var node_text := xml.get_node_data().split("\n")
@@ -124,11 +126,7 @@ func doc_selected() -> void:
 				dedented_text = dedented_text.slice(1, max(dedented_text.size() - 1, 1))
 				
 				if not dedented_text.is_empty():
-					for line in dedented_text:
-						if not line.is_empty():
-							min_tabs = min(min_tabs, line.count("\t"))
-					
-					dedented_text = dedented_text.map(func(line: String): return line.trim_prefix("\t".repeat(min_tabs)))
+					dedented_text = dedented_text.map(func(line: String): return line.trim_prefix("\t".repeat(tabs)))
 					text.append("\n".join(PackedStringArray(dedented_text)))
 			XMLParser.NODE_ELEMENT_END:
 				match xml.get_node_name():
@@ -151,7 +149,7 @@ func doc_selected() -> void:
 				data.description = final_text
 			else:
 				current_member.description = final_text
-				current_member.description_tabs = min_tabs
+				current_member.description_tabs = tabs
 			
 			text.resize(0)
 			finish_text = ""
@@ -191,13 +189,29 @@ func save_current() -> void:
 	if current_file.is_empty():
 		return
 	
+	var data_to_save := file_cache.duplicate()
+	
 	for member in data.members:
-		if not member.description.is_empty():
-			file_cache[member.line_range.x] = "\t".repeat(member.description_tabs) + member.description
+		if member.description.is_empty():
+			continue
+		
+		var lines := member.description.split("\n")
+		var line_count := member.line_range.y - member.line_range.x
+		
+		for i in line_count:
+			if i >= lines.size():
+				data_to_save[member.line_range.x + i] = "::"
+			else:
+				data_to_save[member.line_range.x + i] = "\t".repeat(member.description_tabs) + lines[i]
+		
+		for i in lines.size() - line_count:
+			data_to_save[member.line_range.y - 1] += "\n" + "\t".repeat(member.description_tabs) + lines[line_count + i]
+	
+	data_to_save = data_to_save.filter(func(line: String): return line != "::")
 	
 	var file := File.new()
 	file.open(current_file, File.WRITE)
-	file.store_string("\n".join(PackedStringArray(file_cache)))
+	file.store_string("\n".join(PackedStringArray(data_to_save)))
 
 func _exit_tree() -> void:
 	save_current()
