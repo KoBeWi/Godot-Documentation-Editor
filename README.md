@@ -4,6 +4,8 @@ Handy tool to edit Godot engine's class reference XML files.
 
 Godot engine uses XML files to store documentation source of its classes. When you want to add a description for some class or methods of that class etc. you edit these XMLs. It's ok when you add something new and want to document it, but when you want to fill missing documentation for already-existing classes, it gets annoying. Hence I created this tool.
 
+![](https://github.com/KoBeWi/Godot-Documentation-Editor/blob/master/Media/Screenshot.png)
+
 The idea is to make navigating and finding missing descriptions easier. The tool is right now very unfinished, most of the features are missing. It's stable though - it correctly opens XML files and saves your changes without breaking anything \o/ (hopefully)
 
 ## Current features
