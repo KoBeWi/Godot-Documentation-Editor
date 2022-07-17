@@ -14,6 +14,10 @@ config/name="Godot Documentation Editor"
 run/main_scene="res://Main.tscn"
 config/features=PackedStringArray("4.0")
 
+[debug]
+
+gdscript/warnings/unassigned_variable=0
+
 [display]
 
 window/size/viewport_width=1600

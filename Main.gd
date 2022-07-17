@@ -6,6 +6,8 @@ const CONFIG_PATH = "user://config.cfg"
 @onready var accept_dialog: AcceptDialog = %AcceptDialog
 @onready var file_tree: Tree = %FileTree
 
+@onready var item_containers := [%Methods, %Members, %Operators, %Signals, %Constants, %ThemeItems]
+
 var godot_path: String
 
 var current_file: String
@@ -132,7 +134,7 @@ func doc_selected() -> void:
 				match xml.get_node_name():
 					"brief_description":
 						finish_text = "brief_description"
-					"description", "member", "theme_item":
+					"description", "member", "theme_item", "constant":
 						if current_member:
 							finish_text = current_member.name
 							current_member.line_range.y = xml.get_current_line()
@@ -201,7 +203,10 @@ func save_current() -> void:
 		for i in line_count:
 			if i >= lines.size():
 				data_to_save[member.line_range.x + i] = "::"
+			elif lines[i].is_empty():
+				data_to_save[member.line_range.x + i] = ""
 			else:
+				lines[i] = lines[i].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 				data_to_save[member.line_range.x + i] = "\t".repeat(member.description_tabs) + lines[i]
 		
 		for i in lines.size() - line_count:
@@ -212,6 +217,13 @@ func save_current() -> void:
 	var file := File.new()
 	file.open(current_file, File.WRITE)
 	file.store_string("\n".join(PackedStringArray(data_to_save)))
+
+func goto_next_empty() -> void:
+	for container in item_containers:
+		for node in container.get_children():
+			if node.member.description.is_empty():
+				node.edit()
+				return
 
 func _exit_tree() -> void:
 	save_current()

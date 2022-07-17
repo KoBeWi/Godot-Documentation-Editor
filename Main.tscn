@@ -63,6 +63,7 @@ unique_name_in_owner = true
 offset_right = 1184.0
 offset_bottom = 800.0
 size_flags_horizontal = 3
+follow_focus = true
 vertical_scroll_mode = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="PanelContainer/Contentainer"]
@@ -271,6 +272,7 @@ offset_bottom = 641.0
 [node name="FileDialog" type="FileDialog" parent="."]
 unique_name_in_owner = true
 title = "Open a Directory"
+ok_button_text = "Select Current Folder"
 file_mode = 2
 access = 2
 
@@ -285,6 +287,7 @@ one_shot = true
 
 [connection signal="pressed" from="VBoxContainer2/Button" to="." method="refresh_files"]
 [connection signal="item_selected" from="VBoxContainer2/FileTree" to="." method="doc_selected"]
+[connection signal="pressed" from="PanelContainer/Contentainer/MarginContainer/VBoxContainer/HBoxContainer/Button" to="." method="goto_next_empty"]
 [connection signal="dir_selected" from="FileDialog" to="." method="on_dir_selected"]
 [connection signal="visibility_changed" from="AcceptDialog" to="." method="accept_closed"]
 [connection signal="timeout" from="SaveTimer" to="." method="save_current"]

@@ -29,3 +29,6 @@ func connect_changed(target: Callable):
 
 func update_member():
 	member.description = $Description.text
+
+func edit():
+	$Description.grab_focus()
