@@ -68,7 +68,7 @@ vertical_scroll_mode = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="PanelContainer/Contentainer"]
 offset_right = 1176.0
-offset_bottom = 649.0
+offset_bottom = 694.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/margin_left = 4
@@ -80,7 +80,7 @@ theme_override_constants/margin_bottom = 4
 offset_left = 4.0
 offset_top = 4.0
 offset_right = 1172.0
-offset_bottom = 645.0
+offset_bottom = 690.0
 size_flags_horizontal = 3
 
 [node name="Title" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
@@ -185,89 +185,103 @@ offset_top = 351.0
 offset_right = 1168.0
 offset_bottom = 371.0
 
-[node name="Label9" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+[node name="Label11" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
 offset_top = 375.0
 offset_right = 1168.0
 offset_bottom = 412.0
 theme_override_font_sizes/font_size = 24
-text = "Methods"
+text = "Constructors"
 horizontal_alignment = 1
 
-[node name="Methods" type="VBoxContainer" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+[node name="Constructors" type="VBoxContainer" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 offset_top = 416.0
 offset_right = 1168.0
 offset_bottom = 416.0
 
-[node name="Label5" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+[node name="Label10" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
 offset_top = 420.0
 offset_right = 1168.0
 offset_bottom = 457.0
-theme_override_font_sizes/font_size = 24
-text = "Members"
-horizontal_alignment = 1
-
-[node name="Members" type="VBoxContainer" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
-unique_name_in_owner = true
-offset_top = 461.0
-offset_right = 1168.0
-offset_bottom = 461.0
-
-[node name="Label10" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
-offset_top = 465.0
-offset_right = 1168.0
-offset_bottom = 502.0
 theme_override_font_sizes/font_size = 24
 text = "Operators"
 horizontal_alignment = 1
 
 [node name="Operators" type="VBoxContainer" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
+offset_top = 461.0
+offset_right = 1168.0
+offset_bottom = 461.0
+
+[node name="Label9" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+offset_top = 465.0
+offset_right = 1168.0
+offset_bottom = 502.0
+theme_override_font_sizes/font_size = 24
+text = "Methods"
+horizontal_alignment = 1
+
+[node name="Methods" type="VBoxContainer" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
 offset_top = 506.0
 offset_right = 1168.0
 offset_bottom = 506.0
 
-[node name="Label7" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+[node name="Label5" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
 offset_top = 510.0
 offset_right = 1168.0
 offset_bottom = 547.0
+theme_override_font_sizes/font_size = 24
+text = "Members"
+horizontal_alignment = 1
+
+[node name="Members" type="VBoxContainer" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+offset_top = 551.0
+offset_right = 1168.0
+offset_bottom = 551.0
+
+[node name="Label7" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+offset_top = 555.0
+offset_right = 1168.0
+offset_bottom = 592.0
 theme_override_font_sizes/font_size = 24
 text = "Signals"
 horizontal_alignment = 1
 
 [node name="Signals" type="VBoxContainer" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
-offset_top = 551.0
+offset_top = 596.0
 offset_right = 1168.0
-offset_bottom = 551.0
+offset_bottom = 596.0
 
 [node name="Label6" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
-offset_top = 555.0
+offset_top = 600.0
 offset_right = 1168.0
-offset_bottom = 592.0
+offset_bottom = 637.0
 theme_override_font_sizes/font_size = 24
 text = "Constants"
 horizontal_alignment = 1
 
 [node name="Constants" type="VBoxContainer" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
-offset_top = 596.0
+offset_top = 641.0
 offset_right = 1168.0
-offset_bottom = 596.0
+offset_bottom = 641.0
 
 [node name="Label8" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
-offset_top = 600.0
+offset_top = 645.0
 offset_right = 1168.0
-offset_bottom = 637.0
+offset_bottom = 682.0
 theme_override_font_sizes/font_size = 24
 text = "Theme Items"
 horizontal_alignment = 1
 
 [node name="ThemeItems" type="VBoxContainer" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
-offset_top = 641.0
+offset_top = 686.0
 offset_right = 1168.0
-offset_bottom = 641.0
+offset_bottom = 686.0
 
 [node name="FileDialog" type="FileDialog" parent="."]
 unique_name_in_owner = true

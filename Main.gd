@@ -2,11 +2,14 @@ extends Control
 
 const CONFIG_PATH = "user://config.cfg"
 
+const ONE_LEVEL_GROUPS = ["member", "constant", "theme_item"]
+const TWO_LEVEL_GROUPS = ["method", "constructor", "operator", "signal"]
+
 @onready var file_dialog: FileDialog = %FileDialog
 @onready var accept_dialog: AcceptDialog = %AcceptDialog
 @onready var file_tree: Tree = %FileTree
 
-@onready var item_containers := [%Methods, %Members, %Operators, %Signals, %Constants, %ThemeItems]
+@onready var item_containers := [%Constructors, %Operators, %Methods, %Members, %Signals, %Constants, %ThemeItems]
 
 var godot_path: String
 
@@ -101,7 +104,7 @@ func doc_selected() -> void:
 				match xml.get_node_name():
 					"class":
 						data.name = xml.get_attribute_value(0)
-					"method", "member", "signal", "constant", "theme_item", "operator":
+					"method", "member", "signal", "constant", "theme_item", "operator", "constructor":
 						tabs = file_cache[xml.get_current_line()].count("\t") + 1
 						var skip: bool
 						for i in xml.get_attribute_count():
@@ -116,11 +119,17 @@ func doc_selected() -> void:
 						current_member.category = xml.get_node_name()
 						current_member.name = xml.get_attribute_value(0)
 						current_member.line_range.x = xml.get_current_line() + 1
-					"description":
-						tabs = file_cache[xml.get_current_line() - 1].count("\t") + 1
+						
+						tabs = file_cache[xml.get_current_line()].count("\t")
+						if xml.get_node_name() in ONE_LEVEL_GROUPS:
+							tabs += 1
+						elif xml.get_node_name() in TWO_LEVEL_GROUPS:
+							tabs += 2
+					"brief_description", "description":
 						if current_member:
-#							prints(current_member.name, tabs, xml.get_current_line()) ## FIXME: why this is wrong ;_;
 							current_member.line_range.x = xml.get_current_line() + 1
+						else:
+							tabs = 2
 			XMLParser.NODE_TEXT:
 				var node_text := xml.get_node_data().split("\n")
 				
@@ -156,6 +165,7 @@ func doc_selected() -> void:
 			text.resize(0)
 			finish_text = ""
 			current_member = null
+			tabs = 0
 	
 	%Contentainer.show()
 	
@@ -163,9 +173,10 @@ func doc_selected() -> void:
 	%Description.set_item("", data.description)
 	%BriefDescription.set_item("", data.brief_description)
 	
+	fill_items("constructor", %Constructors)
+	fill_items("operator", %Operators)
 	fill_items("method", %Methods)
 	fill_items("member", %Members)
-	fill_items("operator", %Operators)
 	fill_items("signal", %Signals)
 	fill_items("constant", %Constants)
 	fill_items("theme_item", %ThemeItems)
