@@ -8,6 +8,16 @@ Godot engine uses XML files to store documentation source of its classes. When y
 
 The idea is to make navigating and finding missing descriptions easier. The tool is right now very unfinished, most of the features are missing. It's stable though - it correctly opens XML files and saves your changes without breaking anything \o/ (hopefully)
 
+## How to use
+
+- Download this
+- Open `project.godot` with Godot. Requires 4.0 alpha 12 or newer
+- You will be asked to pick Godot source directory. You need to select the root folder of Godot's main repository (godotengine/godot, master branch). Be sure to have it downloaded beforehand
+- The editor will automatically fetch all files and display them for you
+- Click a file in the tree on the left to display its contents
+- Any changes you do autosave automatically
+- Happy editing!
+
 ## Current features
 - list all available documentation files in a tree structure
 - open documentation files and display their content in a more organized way
