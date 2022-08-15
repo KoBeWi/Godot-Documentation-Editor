@@ -70,9 +70,12 @@ func add_files(directory: String):
 				root.set_text(0, directory.get_base_dir().get_file())
 				root.set_selectable(0, false)
 			
+			var path := dir.get_current_dir().plus_file(file)
 			var item := root.create_child()
 			item.set_text(0, file)
-			item.set_metadata(0, dir.get_current_dir().plus_file(file))
+			item.set_metadata(0, path)
+			
+			get_file_progress(path, item)
 	
 	for dir2 in dir.get_directories():
 		add_files(dir.get_current_dir().plus_file(dir2))
@@ -289,3 +292,24 @@ func validate() -> void:
 		for error in errors:
 			printerr(error)
  
+func get_file_progress(path: String, item: TreeItem):
+	var all: float
+	var empty: float
+	var empty_element: bool
+	
+	var pre_xml := XMLParser.new()
+	pre_xml.open(path)
+	
+	while pre_xml.read() != ERR_FILE_EOF:
+		match pre_xml.get_node_type():
+			XMLParser.NODE_ELEMENT:
+				empty_element = true
+				all += 1
+			XMLParser.NODE_TEXT:
+				empty_element = false
+			XMLParser.NODE_ELEMENT_END:
+				if empty_element:
+					empty += 1
+	
+	if all > 0:
+		item.set_custom_color(0, Color.GREEN.lerp(Color.RED, empty / all))
