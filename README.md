@@ -23,10 +23,10 @@ The idea is to make navigating and finding missing descriptions easier. The tool
 - open documentation files and display their content in a more organized way
 - highlight empty descriptions in red
 - jump to the first empty desctription in a file
+- display file status in the tree using colors
 
 ## Planned features
 - jump to next empty/unfinished file and description
-- display file status in the tree using colors
 - display number of complete descriptions vs total and missing descriptions in a file
 - BBCode highlighting
 - buttons for quick inserting of BBCodes (they are not functional yet)
