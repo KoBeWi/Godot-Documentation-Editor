@@ -129,10 +129,10 @@ func doc_selected() -> void:
 						elif xml.get_node_name() in TWO_LEVEL_GROUPS:
 							tabs += 2
 					"brief_description", "description":
-						if current_member:
-							current_member.line_range.x = xml.get_current_line() + 1
-						else:
+						if not current_member:
+							current_member = data.description if xml.get_node_name() == "description" else data.brief_description
 							tabs = 2
+						current_member.line_range.x = xml.get_current_line() + 1
 					"return":
 						for i in xml.get_attribute_count():
 							if xml.get_attribute_name(i) == "type":
@@ -157,27 +157,16 @@ func doc_selected() -> void:
 					dedented_text = dedented_text.map(func(line: String): return line.trim_prefix("\t".repeat(tabs)))
 					text.append("\n".join(PackedStringArray(dedented_text)))
 			XMLParser.NODE_ELEMENT_END:
-				match xml.get_node_name():
-					"brief_description":
-						finish_text = "brief_description"
-					"description", "member", "theme_item", "constant", "annotation":
-						if current_member:
-							finish_text = current_member.name
-							current_member.line_range.y = xml.get_current_line()
-							data.members.append(current_member)
-						else:
-							finish_text = "description"
+				if current_member:
+					finish_text = "needs refactor"
+					current_member.line_range.y = xml.get_current_line()
+					data.members.append(current_member)
 		
 		if not finish_text.is_empty():
 			var final_text := "\n".join(text)
 			
-			if finish_text == "brief_description":
-				data.brief_description = final_text
-			elif finish_text == "description":
-				data.description = final_text
-			else:
-				current_member.description = final_text
-				current_member.description_tabs = tabs
+			current_member.description = final_text
+			current_member.description_tabs = tabs
 			
 			text.resize(0)
 			finish_text = ""
@@ -187,8 +176,8 @@ func doc_selected() -> void:
 	%Contentainer.show()
 	
 	%Title.text = data.name
-	%Description.set_item("", data.description)
-	%BriefDescription.set_item("", data.brief_description)
+	%Description.set_member(data.description)
+	%BriefDescription.set_member(data.brief_description)
 	
 	fill_items("constructor", %Constructors)
 	fill_items("operator", %Operators)
@@ -223,29 +212,32 @@ func save_current() -> void:
 	var data_to_save := file_cache.duplicate()
 	
 	for member in data.members:
-		if member.description.is_empty():
-			continue
-		
-		var lines := member.description.split("\n")
-		var line_count := member.line_range.y - member.line_range.x
-		
-		for i in line_count:
-			if i >= lines.size():
-				data_to_save[member.line_range.x + i] = "::"
-			elif lines[i].is_empty():
-				data_to_save[member.line_range.x + i] = ""
-			else:
-				lines[i] = lines[i].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-				data_to_save[member.line_range.x + i] = "\t".repeat(member.description_tabs) + lines[i]
-		
-		for i in lines.size() - line_count:
-			data_to_save[member.line_range.y - 1] += "\n" + "\t".repeat(member.description_tabs) + lines[line_count + i]
+		store_member(member, data_to_save)
 	
 	data_to_save = data_to_save.filter(func(line: String): return line != "::")
 	
 	var file := File.new()
 	file.open(current_file, File.WRITE)
 	file.store_string("\n".join(PackedStringArray(data_to_save)))
+
+func store_member(member: ClassData.MemberData, data_to_save: Array[String]):
+	if member.description.is_empty():
+		return
+	
+	var lines := member.description.split("\n")
+	var line_count := member.line_range.y - member.line_range.x
+	
+	for i in line_count:
+		if i >= lines.size():
+			data_to_save[member.line_range.x + i] = "::"
+		elif lines[i].is_empty():
+			data_to_save[member.line_range.x + i] = ""
+		else:
+			lines[i] = lines[i].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+			data_to_save[member.line_range.x + i] = "\t".repeat(member.description_tabs) + lines[i]
+	
+	for i in lines.size() - line_count:
+		data_to_save[member.line_range.y - 1] += "\n" + "\t".repeat(member.description_tabs) + lines[line_count + i]
 
 func goto_next_empty() -> void:
 	for container in item_containers:
@@ -256,24 +248,6 @@ func goto_next_empty() -> void:
 
 func _exit_tree() -> void:
 	save_current()
-
-class ClassData:
-	var name: String
-	var brief_description: String
-	var description: String
-	var members: Array[MemberData]
-	
-	class MemberData:
-		var category: String
-		var name: String
-		var description: String
-		var return_type: String
-		var arguments: Array[Array]
-		var description_tabs: int
-		var line_range: Vector2i
-		
-		func _to_string() -> String:
-			return str(category, "/", name)
 
 func validate() -> void:
 	var args: PackedStringArray
@@ -303,13 +277,40 @@ func get_file_progress(path: String, item: TreeItem):
 	while pre_xml.read() != ERR_FILE_EOF:
 		match pre_xml.get_node_type():
 			XMLParser.NODE_ELEMENT:
+				if pre_xml.get_node_name() == "tutorials":
+					continue
+				
 				empty_element = true
 				all += 1
 			XMLParser.NODE_TEXT:
 				empty_element = false
 			XMLParser.NODE_ELEMENT_END:
+				if pre_xml.get_node_name() == "tutorials":
+					continue
+				
 				if empty_element:
 					empty += 1
 	
 	if all > 0:
-		item.set_custom_color(0, Color.GREEN.lerp(Color.RED, empty / all))
+		if empty == 0:
+			item.set_custom_color(0, Color.CYAN)
+		else:
+			item.set_custom_color(0, Color.GREEN.lerp(Color.RED, empty / all))
+
+class ClassData:
+	var name: String
+	var brief_description := MemberData.new()
+	var description := MemberData.new()
+	var members: Array[MemberData]
+	
+	class MemberData:
+		var category: String
+		var name: String
+		var description: String
+		var return_type: String
+		var arguments: Array[Array]
+		var description_tabs: int
+		var line_range: Vector2i
+		
+		func _to_string() -> String:
+			return str(category, "/", name)
