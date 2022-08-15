@@ -277,17 +277,18 @@ func get_file_progress(path: String, item: TreeItem):
 	while pre_xml.read() != ERR_FILE_EOF:
 		match pre_xml.get_node_type():
 			XMLParser.NODE_ELEMENT:
-				if pre_xml.get_node_name() == "tutorials":
+				if pre_xml.get_node_name().ends_with("s"): # nice hack
 					continue
 				
 				empty_element = true
-				all += 1
 			XMLParser.NODE_TEXT:
-				empty_element = false
+				if not pre_xml.get_node_data().strip_edges().is_empty():
+					empty_element = false
 			XMLParser.NODE_ELEMENT_END:
-				if pre_xml.get_node_name() == "tutorials":
+				if pre_xml.get_node_name().ends_with("s"):
 					continue
 				
+				all += 1
 				if empty_element:
 					empty += 1
 	

@@ -2,9 +2,11 @@ extends Control
 
 var member
 
+func _ready() -> void:
+	$Description.text_changed.connect(update_member)
+
 func set_member(m):
 	member = m
-	$Description.text_changed.connect(update_member)
 	set_item(m.name, m.description, m.arguments, m.return_type)
 
 func set_item(item: String, description: String, arguments := [], return_type := ""):
