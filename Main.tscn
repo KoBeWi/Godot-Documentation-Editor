@@ -68,7 +68,7 @@ vertical_scroll_mode = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="PanelContainer/Contentainer"]
 offset_right = 1176.0
-offset_bottom = 694.0
+offset_bottom = 800.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/margin_left = 4

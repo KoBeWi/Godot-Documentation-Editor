@@ -130,6 +130,20 @@ func doc_selected() -> void:
 							current_member.line_range.x = xml.get_current_line() + 1
 						else:
 							tabs = 2
+					"return":
+						for i in xml.get_attribute_count():
+							if xml.get_attribute_name(i) == "type":
+								current_member.return_type = xml.get_attribute_value(i)
+					"param":
+						var param := ["", ""]
+						
+						for i in xml.get_attribute_count():
+							if xml.get_attribute_name(i) == "name":
+								param[0] = xml.get_attribute_value(i)
+							elif xml.get_attribute_name(i) == "type":
+								param[1] = xml.get_attribute_value(i)
+						
+						current_member.arguments.append(param)
 			XMLParser.NODE_TEXT:
 				var node_text := xml.get_node_data().split("\n")
 				
@@ -249,6 +263,8 @@ class ClassData:
 		var category: String
 		var name: String
 		var description: String
+		var return_type: String
+		var arguments: Array[Array]
 		var description_tabs: int
 		var line_range: Vector2i
 		

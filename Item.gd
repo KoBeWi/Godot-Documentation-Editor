@@ -5,13 +5,30 @@ var member
 func set_member(m):
 	member = m
 	$Description.text_changed.connect(update_member)
-	set_item(m.name, m.description)
+	set_item(m.name, m.description, m.arguments, m.return_type)
 
-func set_item(item: String, description: String):
+func set_item(item: String, description: String, arguments := [], return_type := ""):
 	if item.is_empty():
 		%Label.hide()
 	else:
-		%Label.text = item
+		var text := PackedStringArray([item])
+		
+		if not arguments.is_empty():
+			text.append("(")
+			
+			var subtext: PackedStringArray
+			for argument in arguments:
+				subtext.append("%s: %s" % argument)
+			text.append(", ".join(subtext))
+			
+			text.append(")")
+		
+		if not return_type.is_empty():
+			text.append(" -> ")
+			text.append(return_type)
+		
+		%Label.text = "".join(text)
+	
 	$Description.text = description
 	refresh_color()
 	
