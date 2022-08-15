@@ -271,3 +271,21 @@ class ClassData:
 		
 		func _to_string() -> String:
 			return str(category, "/", name)
+
+func validate() -> void:
+	var args: PackedStringArray
+	args.append(godot_path.plus_file("doc").plus_file("tools").plus_file("make_rst.py"))
+	args.append("--dry-run")
+	args.append(godot_path.plus_file("doc/classes"))
+	args.append(godot_path.plus_file("modules"))
+	
+	var output: Array
+	var ok := OS.execute("python", args, output)
+	if ok == OK:
+		OS.alert("No errors found.")
+	else:
+		OS.alert("Errors found. Check console for details.")
+		var errors = Array(output[0].split("\n")).map(func(string: String): return string.strip_edges()).slice(1, -2)
+		for error in errors:
+			printerr(error)
+ 
