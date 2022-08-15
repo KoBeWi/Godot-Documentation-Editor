@@ -3,7 +3,7 @@ extends Control
 const CONFIG_PATH = "user://config.cfg"
 
 const ONE_LEVEL_GROUPS = ["member", "constant", "theme_item"]
-const TWO_LEVEL_GROUPS = ["method", "constructor", "operator", "signal"]
+const TWO_LEVEL_GROUPS = ["method", "constructor", "operator", "signal", "annotation"]
 
 @onready var file_dialog: FileDialog = %FileDialog
 @onready var accept_dialog: AcceptDialog = %AcceptDialog
@@ -104,7 +104,7 @@ func doc_selected() -> void:
 				match xml.get_node_name():
 					"class":
 						data.name = xml.get_attribute_value(0)
-					"method", "member", "signal", "constant", "theme_item", "operator", "constructor":
+					"method", "member", "signal", "constant", "theme_item", "operator", "constructor", "annotation":
 						tabs = file_cache[xml.get_current_line()].count("\t") + 1
 						var skip: bool
 						for i in xml.get_attribute_count():
@@ -157,7 +157,7 @@ func doc_selected() -> void:
 				match xml.get_node_name():
 					"brief_description":
 						finish_text = "brief_description"
-					"description", "member", "theme_item", "constant":
+					"description", "member", "theme_item", "constant", "annotation":
 						if current_member:
 							finish_text = current_member.name
 							current_member.line_range.y = xml.get_current_line()
@@ -194,6 +194,7 @@ func doc_selected() -> void:
 	fill_items("signal", %Signals)
 	fill_items("constant", %Constants)
 	fill_items("theme_item", %ThemeItems)
+	fill_items("annotation", %Annotations)
 
 func fill_items(category: String, container: Node):
 	for child in container.get_children():

@@ -80,7 +80,7 @@ theme_override_constants/margin_bottom = 4
 offset_left = 4.0
 offset_top = 4.0
 offset_right = 1172.0
-offset_bottom = 690.0
+offset_bottom = 796.0
 size_flags_horizontal = 3
 
 [node name="Title" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
@@ -282,6 +282,20 @@ unique_name_in_owner = true
 offset_top = 686.0
 offset_right = 1168.0
 offset_bottom = 686.0
+
+[node name="Label12" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+offset_top = 690.0
+offset_right = 1168.0
+offset_bottom = 727.0
+theme_override_font_sizes/font_size = 24
+text = "Annotations"
+horizontal_alignment = 1
+
+[node name="Annotations" type="VBoxContainer" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+offset_top = 731.0
+offset_right = 1168.0
+offset_bottom = 731.0
 
 [node name="FileDialog" type="FileDialog" parent="."]
 unique_name_in_owner = true
