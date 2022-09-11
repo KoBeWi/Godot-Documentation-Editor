@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://b4mjn652yw8ya" path="res://Item.tscn" id="2_qkmer"]
 
 [node name="Main" type="HBoxContainer"]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_constants/separation = 16
@@ -11,48 +12,55 @@ script = ExtResource("1_xbpis")
 metadata/_edit_lock_ = true
 
 [node name="VBoxContainer2" type="VBoxContainer" parent="."]
+layout_mode = 2
 offset_right = 400.0
 offset_bottom = 800.0
 
 [node name="Label" type="Label" parent="VBoxContainer2"]
+layout_mode = 2
 offset_right = 400.0
 offset_bottom = 26.0
 text = "File List"
 horizontal_alignment = 1
 
 [node name="Button" type="Button" parent="VBoxContainer2"]
+layout_mode = 2
 offset_top = 30.0
 offset_right = 400.0
 offset_bottom = 61.0
 text = "Refresh"
 
 [node name="Button4" type="Button" parent="VBoxContainer2"]
+layout_mode = 2
 offset_top = 65.0
 offset_right = 400.0
 offset_bottom = 96.0
-hint_tooltip = "Runs make_rst.py."
 text = "Run Validation"
 
 [node name="Button2" type="Button" parent="VBoxContainer2"]
+layout_mode = 2
 offset_top = 100.0
 offset_right = 400.0
 offset_bottom = 131.0
 text = "Next Empty"
 
 [node name="Button3" type="Button" parent="VBoxContainer2"]
+layout_mode = 2
 offset_top = 135.0
 offset_right = 400.0
 offset_bottom = 166.0
 text = "Next Unfinished"
 
 [node name="HSeparator" type="HSeparator" parent="VBoxContainer2"]
+layout_mode = 2
 offset_top = 170.0
 offset_right = 400.0
 offset_bottom = 174.0
 
 [node name="FileTree" type="Tree" parent="VBoxContainer2"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(400, 0)
+custom_minimum_size = Vector2i(400, 0)
+layout_mode = 2
 offset_top = 178.0
 offset_right = 400.0
 offset_bottom = 800.0
@@ -60,6 +68,7 @@ size_flags_vertical = 3
 hide_root = true
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
+layout_mode = 2
 offset_left = 416.0
 offset_right = 1600.0
 offset_bottom = 800.0
@@ -67,6 +76,7 @@ size_flags_horizontal = 3
 
 [node name="Contentainer" type="ScrollContainer" parent="PanelContainer"]
 unique_name_in_owner = true
+layout_mode = 2
 offset_right = 1184.0
 offset_bottom = 800.0
 size_flags_horizontal = 3
@@ -74,6 +84,7 @@ follow_focus = true
 vertical_scroll_mode = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="PanelContainer/Contentainer"]
+layout_mode = 2
 offset_right = 1176.0
 offset_bottom = 800.0
 size_flags_horizontal = 3
@@ -84,6 +95,7 @@ theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 
 [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/Contentainer/MarginContainer"]
+layout_mode = 2
 offset_left = 4.0
 offset_top = 4.0
 offset_right = 1172.0
@@ -92,6 +104,7 @@ size_flags_horizontal = 3
 
 [node name="Title" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
+layout_mode = 2
 offset_right = 1168.0
 offset_bottom = 45.0
 theme_override_font_sizes/font_size = 30
@@ -99,6 +112,7 @@ text = "Class Name"
 horizontal_alignment = 1
 
 [node name="Label2" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
 offset_top = 49.0
 offset_right = 1168.0
 offset_bottom = 86.0
@@ -108,11 +122,13 @@ horizontal_alignment = 1
 
 [node name="BriefDescription" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer" instance=ExtResource("2_qkmer")]
 unique_name_in_owner = true
+layout_mode = 2
 offset_top = 90.0
 offset_right = 1168.0
 offset_bottom = 152.0
 
 [node name="Label3" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
 offset_top = 156.0
 offset_right = 1168.0
 offset_bottom = 193.0
@@ -122,11 +138,13 @@ horizontal_alignment = 1
 
 [node name="Description" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer" instance=ExtResource("2_qkmer")]
 unique_name_in_owner = true
+layout_mode = 2
 offset_top = 197.0
 offset_right = 1168.0
 offset_bottom = 259.0
 
 [node name="Label4" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
 offset_top = 263.0
 offset_right = 1168.0
 offset_bottom = 300.0
@@ -136,63 +154,75 @@ horizontal_alignment = 1
 
 [node name="Tutorials" type="VBoxContainer" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
+layout_mode = 2
 offset_top = 304.0
 offset_right = 1168.0
 offset_bottom = 304.0
 
 [node name="HSeparator" type="HSeparator" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
 offset_top = 308.0
 offset_right = 1168.0
 offset_bottom = 312.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
 offset_top = 316.0
 offset_right = 1168.0
 offset_bottom = 347.0
 alignment = 1
 
 [node name="Button" type="Button" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
 offset_left = 441.0
 offset_right = 540.0
 offset_bottom = 31.0
 text = "Next Empty"
 
 [node name="VSeparator" type="VSeparator" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
 offset_left = 544.0
 offset_right = 548.0
 offset_bottom = 31.0
 
 [node name="Button2" type="Button" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
 offset_left = 552.0
 offset_right = 570.0
 offset_bottom = 31.0
 text = "b"
 
 [node name="Button3" type="Button" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
 offset_left = 574.0
 offset_right = 587.0
 offset_bottom = 31.0
 text = "i"
 
 [node name="Button4" type="Button" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
 offset_left = 591.0
 offset_right = 636.0
 offset_bottom = 31.0
 text = "code"
 
 [node name="Button5" type="Button" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
 offset_left = 640.0
 offset_right = 727.0
 offset_bottom = 31.0
 text = "codeblock"
 
 [node name="Control" type="Control" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 20)
+custom_minimum_size = Vector2i(0, 20)
+layout_mode = 2
+anchors_preset = 0
 offset_top = 351.0
 offset_right = 1168.0
 offset_bottom = 371.0
 
 [node name="Label11" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
 offset_top = 375.0
 offset_right = 1168.0
 offset_bottom = 412.0
@@ -202,11 +232,13 @@ horizontal_alignment = 1
 
 [node name="Constructors" type="VBoxContainer" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
+layout_mode = 2
 offset_top = 416.0
 offset_right = 1168.0
 offset_bottom = 416.0
 
 [node name="Label10" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
 offset_top = 420.0
 offset_right = 1168.0
 offset_bottom = 457.0
@@ -216,11 +248,13 @@ horizontal_alignment = 1
 
 [node name="Operators" type="VBoxContainer" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
+layout_mode = 2
 offset_top = 461.0
 offset_right = 1168.0
 offset_bottom = 461.0
 
 [node name="Label9" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
 offset_top = 465.0
 offset_right = 1168.0
 offset_bottom = 502.0
@@ -230,11 +264,13 @@ horizontal_alignment = 1
 
 [node name="Methods" type="VBoxContainer" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
+layout_mode = 2
 offset_top = 506.0
 offset_right = 1168.0
 offset_bottom = 506.0
 
 [node name="Label5" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
 offset_top = 510.0
 offset_right = 1168.0
 offset_bottom = 547.0
@@ -244,11 +280,13 @@ horizontal_alignment = 1
 
 [node name="Members" type="VBoxContainer" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
+layout_mode = 2
 offset_top = 551.0
 offset_right = 1168.0
 offset_bottom = 551.0
 
 [node name="Label7" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
 offset_top = 555.0
 offset_right = 1168.0
 offset_bottom = 592.0
@@ -258,11 +296,13 @@ horizontal_alignment = 1
 
 [node name="Signals" type="VBoxContainer" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
+layout_mode = 2
 offset_top = 596.0
 offset_right = 1168.0
 offset_bottom = 596.0
 
 [node name="Label6" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
 offset_top = 600.0
 offset_right = 1168.0
 offset_bottom = 637.0
@@ -272,11 +312,13 @@ horizontal_alignment = 1
 
 [node name="Constants" type="VBoxContainer" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
+layout_mode = 2
 offset_top = 641.0
 offset_right = 1168.0
 offset_bottom = 641.0
 
 [node name="Label8" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
 offset_top = 645.0
 offset_right = 1168.0
 offset_bottom = 682.0
@@ -286,11 +328,13 @@ horizontal_alignment = 1
 
 [node name="ThemeItems" type="VBoxContainer" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
+layout_mode = 2
 offset_top = 686.0
 offset_right = 1168.0
 offset_bottom = 686.0
 
 [node name="Label12" type="Label" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
 offset_top = 690.0
 offset_right = 1168.0
 offset_bottom = 727.0
@@ -300,6 +344,7 @@ horizontal_alignment = 1
 
 [node name="Annotations" type="VBoxContainer" parent="PanelContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
+layout_mode = 2
 offset_top = 731.0
 offset_right = 1168.0
 offset_bottom = 731.0

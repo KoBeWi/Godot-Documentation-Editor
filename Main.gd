@@ -51,8 +51,8 @@ func refresh_files():
 	file_tree.clear()
 	file_tree.create_item()
 	
-	add_files(godot_path.plus_file("doc/classes"))
-	add_files(godot_path.plus_file("modules"))
+	add_files(godot_path.path_join("doc/classes"))
+	add_files(godot_path.path_join("modules"))
 
 func add_files(directory: String):
 	var root: TreeItem
@@ -70,7 +70,7 @@ func add_files(directory: String):
 				root.set_text(0, directory.get_base_dir().get_file())
 				root.set_selectable(0, false)
 			
-			var path := dir.get_current_dir().plus_file(file)
+			var path := dir.get_current_dir().path_join(file)
 			var item := root.create_child()
 			item.set_text(0, file)
 			item.set_metadata(0, path)
@@ -78,7 +78,7 @@ func add_files(directory: String):
 			get_file_progress(path, item)
 	
 	for dir2 in dir.get_directories():
-		add_files(dir.get_current_dir().plus_file(dir2))
+		add_files(dir.get_current_dir().path_join(dir2))
 
 func doc_selected() -> void:
 	save_current()
@@ -251,10 +251,10 @@ func _exit_tree() -> void:
 
 func validate() -> void:
 	var args: PackedStringArray
-	args.append(godot_path.plus_file("doc").plus_file("tools").plus_file("make_rst.py"))
+	args.append(godot_path.path_join("doc").path_join("tools").path_join("make_rst.py"))
 	args.append("--dry-run")
-	args.append(godot_path.plus_file("doc/classes"))
-	args.append(godot_path.plus_file("modules"))
+	args.append(godot_path.path_join("doc/classes"))
+	args.append(godot_path.path_join("modules"))
 	
 	var output: Array
 	var ok := OS.execute("python", args, output)

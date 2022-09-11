@@ -38,7 +38,7 @@ func set_item(item: String, description: String, arguments := [], return_type :=
 		await get_tree().create_timer(0.2).timeout
 		$Description.text = $Description.text
 		$Description.update_minimum_size()
-		$Description.update()
+		$Description.queue_redraw()
 
 func refresh_color():
 	modulate = Color.RED if $Description.text.is_empty() else Color.WHITE
