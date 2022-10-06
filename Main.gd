@@ -31,8 +31,7 @@ func _ready() -> void:
 		refresh_files()
 
 func on_dir_selected(path: String) -> void:
-	var dir := Directory.new()
-	dir.open(path)
+	var dir := DirAccess.open(path)
 	if dir.dir_exists("doc/classes") and dir.dir_exists("modules"):
 		godot_path = path
 		var config := ConfigFile.new()
@@ -57,8 +56,7 @@ func refresh_files():
 func add_files(directory: String):
 	var root: TreeItem
 	
-	var dir := Directory.new()
-	dir.open(directory)
+	var dir := DirAccess.open(directory)
 	
 	if directory.get_file().contains("classes"):
 		for file in dir.get_files():
@@ -89,8 +87,7 @@ func doc_selected() -> void:
 	
 	current_file = file
 	
-	var f := File.new()
-	f.open(file, File.READ)
+	var f := FileAccess.open(file, FileAccess.READ)
 	file_cache = Array(f.get_as_text().split("\n"))
 	
 	data = ClassData.new()
@@ -216,8 +213,7 @@ func save_current() -> void:
 	
 	data_to_save = data_to_save.filter(func(line: String): return line != "::")
 	
-	var file := File.new()
-	file.open(current_file, File.WRITE)
+	var file := FileAccess.open(current_file, FileAccess.WRITE)
 	file.store_string("\n".join(PackedStringArray(data_to_save)))
 
 func store_member(member: ClassData.MemberData, data_to_save: Array[String]):
