@@ -88,7 +88,7 @@ func doc_selected() -> void:
 	current_file = file
 	
 	var f := FileAccess.open(file, FileAccess.READ)
-	file_cache = Array(f.get_as_text().split("\n"))
+	file_cache.assign(f.get_as_text().split("\n"))
 	
 	data = ClassData.new()
 	var xml := XMLParser.new()
@@ -147,11 +147,12 @@ func doc_selected() -> void:
 			XMLParser.NODE_TEXT:
 				var node_text := xml.get_node_data().split("\n")
 				
-				var dedented_text := Array(node_text) as Array[String]
+				var dedented_text: Array[String]
+				dedented_text.assign(node_text)
 				dedented_text = dedented_text.slice(1, max(dedented_text.size() - 1, 1))
 				
 				if not dedented_text.is_empty():
-					dedented_text = dedented_text.map(func(line: String): return line.trim_prefix("\t".repeat(tabs)))
+					dedented_text.assign(dedented_text.map(func(line: String): return line.trim_prefix("\t".repeat(tabs))))
 					text.append("\n".join(PackedStringArray(dedented_text)))
 			XMLParser.NODE_ELEMENT_END:
 				if current_member:
