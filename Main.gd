@@ -52,6 +52,7 @@ func refresh_files():
 	
 	add_files(godot_path.path_join("doc/classes"))
 	add_files(godot_path.path_join("modules"))
+	add_files(godot_path.path_join("platform"))
 
 func add_files(directory: String):
 	var root: TreeItem

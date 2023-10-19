@@ -11,8 +11,10 @@ config_version=5
 [application]
 
 config/name="Godot Documentation Editor"
+config/tags=PackedStringArray("tool")
 run/main_scene="res://Main.tscn"
-config/features=PackedStringArray("4.0")
+config/features=PackedStringArray("4.2")
+run/low_processor_mode=true
 
 [debug]
 
@@ -27,3 +29,7 @@ gdscript/warnings/unused_parameter=0
 window/size/viewport_width=1600
 window/size/viewport_height=800
 window/subwindows/embed_subwindows=false
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
