@@ -2,21 +2,16 @@ extends Control
 
 const CONFIG_PATH = "user://config.cfg"
 
-const ONE_LEVEL_GROUPS = ["member", "constant", "theme_item"]
-const TWO_LEVEL_GROUPS = ["method", "constructor", "operator", "signal", "annotation"]
-
 @onready var file_dialog: FileDialog = %FileDialog
 @onready var accept_dialog: AcceptDialog = %AcceptDialog
 @onready var file_tree: Tree = %FileTree
 
-@onready var item_containers := [%Constructors, %Operators, %Methods, %Members, %Signals, %Constants, %ThemeItems]
+@onready var item_containers := [%Constructors, %Operators, %Methods, %Members, %Signals, %Constants, %ThemeItems, %Annotations]
 
 var godot_path: String
 
 var current_file: String
-var data: ClassData
-var current_member: ClassData.MemberData
-var file_cache: Array[String]
+var doc_data: DocData
 
 func _ready() -> void:
 	%Contentainer.hide()
@@ -87,155 +82,59 @@ func doc_selected() -> void:
 		return
 	
 	current_file = file
-	
-	var f := FileAccess.open(file, FileAccess.READ)
-	file_cache.assign(f.get_as_text().split("\n"))
-	
-	data = ClassData.new()
-	var xml := XMLParser.new()
-	xml.open(file)
-	
-	var finish_text: String
-	var text: PackedStringArray
-	var tabs: int
-	
-	while xml.read() != ERR_FILE_EOF:
-		match xml.get_node_type():
-			XMLParser.NODE_ELEMENT:
-				match xml.get_node_name():
-					"class":
-						data.name = xml.get_attribute_value(0)
-					"method", "member", "signal", "constant", "theme_item", "operator", "constructor", "annotation":
-						tabs = file_cache[xml.get_current_line()].count("\t") + 1
-						var skip: bool
-						for i in xml.get_attribute_count():
-							if xml.get_attribute_name(i) == "overrides":
-								skip = true
-								break
-						
-						if skip:
-							continue
-						
-						current_member = ClassData.MemberData.new()
-						current_member.category = xml.get_node_name()
-						current_member.name = xml.get_attribute_value(0)
-						current_member.line_range.x = xml.get_current_line() + 1
-						
-						tabs = file_cache[xml.get_current_line()].count("\t")
-						if xml.get_node_name() in ONE_LEVEL_GROUPS:
-							tabs += 1
-						elif xml.get_node_name() in TWO_LEVEL_GROUPS:
-							tabs += 2
-					"brief_description", "description":
-						if not current_member:
-							current_member = data.description if xml.get_node_name() == "description" else data.brief_description
-							tabs = 2
-						current_member.line_range.x = xml.get_current_line() + 1
-					"return":
-						for i in xml.get_attribute_count():
-							if xml.get_attribute_name(i) == "type":
-								current_member.return_type = xml.get_attribute_value(i)
-					"param":
-						var param := ["", ""]
-						
-						for i in xml.get_attribute_count():
-							if xml.get_attribute_name(i) == "name":
-								param[0] = xml.get_attribute_value(i)
-							elif xml.get_attribute_name(i) == "type":
-								param[1] = xml.get_attribute_value(i)
-						
-						current_member.arguments.append(param)
-			XMLParser.NODE_TEXT:
-				var node_text := xml.get_node_data().split("\n")
-				
-				var dedented_text: Array[String]
-				dedented_text.assign(node_text)
-				dedented_text = dedented_text.slice(1, max(dedented_text.size() - 1, 1))
-				
-				if not dedented_text.is_empty():
-					dedented_text.assign(dedented_text.map(func(line: String): return line.trim_prefix("\t".repeat(tabs))))
-					text.append("\n".join(PackedStringArray(dedented_text)))
-			XMLParser.NODE_ELEMENT_END:
-				if current_member:
-					finish_text = "needs refactor"
-					current_member.line_range.y = xml.get_current_line()
-					data.members.append(current_member)
-		
-		if not finish_text.is_empty():
-			var final_text := "\n".join(text)
-			
-			current_member.description = final_text
-			current_member.description_tabs = tabs
-			
-			text.resize(0)
-			finish_text = ""
-			current_member = null
-			tabs = 0
+	doc_data = DocData.new()
+	doc_data.parse_file(current_file)
 	
 	%Contentainer.show()
 	
-	%Title.text = data.name
-	%Description.set_member(data.description)
-	%BriefDescription.set_member(data.brief_description)
+	%Title.text = doc_data.top_member.get_name()
+	%Description.set_member(doc_data.top_member)
+	%BriefDescription.set_member(doc_data.top_member, &"brief_description")
 	
-	fill_items("constructor", %Constructors)
-	fill_items("operator", %Operators)
-	fill_items("method", %Methods)
-	fill_items("member", %Members)
-	fill_items("signal", %Signals)
-	fill_items("constant", %Constants)
-	fill_items("theme_item", %ThemeItems)
-	fill_items("annotation", %Annotations)
+	for container in item_containers:
+		for child in container.get_children():
+			child.free()
+	
+	for member in doc_data.members:
+		match member.type:
+			DocData.Member.Type.MEMBER:
+				if "overrides" in member.attributes:
+					continue
+				add_member(member, %Members)
+			DocData.Member.Type.METHOD:
+				add_member(member, %Methods)
+			DocData.Member.Type.SIGNAL:
+				add_member(member, %Signals)
+			DocData.Member.Type.CONSTANT:
+				add_member(member, %Constants)
+			DocData.Member.Type.THEME_ITEM:
+				add_member(member, %ThemeItems)
+			DocData.Member.Type.CONSTRUCTOR:
+				add_member(member, %Constructors)
+			DocData.Member.Type.OPERATOR:
+				add_member(member, %Operators)
+			DocData.Member.Type.ANNOTATION:
+				add_member(member, %Annotations)
+	
+	for container in item_containers:
+		container.visible = container.get_child_count() > 0
+		get_container_label(container).visible = container.visible
 
-func fill_items(category: String, container: Node):
-	for child in container.get_children():
-		child.queue_free()
-	
-	var items_in_category := data.members.filter(func(member): return member.category == category)
-	var header := container.get_parent().get_child(container.get_index() - 1)
-	if items_in_category.is_empty():
-		header.hide()
-	else:
-		header.show()
-		
-		for member_data in items_in_category:
-			var item := preload("res://Item.tscn").instantiate()
-			item.connect_changed($SaveTimer.start)
-			item.set_member(member_data)
-			container.add_child(item)
+func get_container_label(container: Node) -> Control:
+	return container.get_parent().get_child(container.get_index() - 1)
+
+func add_member(member: DocData.Member, container: Node):
+	var item := preload("res://Item.tscn").instantiate()
+	item.connect_changed($SaveTimer.start)
+	item.set_member(member)
+	container.add_child(item)
 
 func save_current() -> void:
 	if current_file.is_empty():
 		return
 	
-	var data_to_save := file_cache.duplicate()
-	
-	for member in data.members:
-		store_member(member, data_to_save)
-	
-	data_to_save = data_to_save.filter(func(line: String): return line != "::")
-	
 	var file := FileAccess.open(current_file, FileAccess.WRITE)
-	file.store_string("\n".join(PackedStringArray(data_to_save)))
-
-func store_member(member: ClassData.MemberData, data_to_save: Array[String]):
-	if member.description.is_empty():
-		return
-	
-	var lines := member.description.split("\n")
-	var line_count := member.line_range.y - member.line_range.x
-	
-	for i in line_count:
-		if i >= lines.size():
-			data_to_save[member.line_range.x + i] = "::"
-		elif lines[i].is_empty():
-			data_to_save[member.line_range.x + i] = ""
-		else:
-			lines[i] = lines[i].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-			data_to_save[member.line_range.x + i] = "\t".repeat(member.description_tabs) + lines[i]
-	
-	for i in lines.size() - line_count:
-		data_to_save[member.line_range.y - 1] += "\n" + "\t".repeat(member.description_tabs) + lines[line_count + i]
+	doc_data.store(file)
 
 func goto_next_empty() -> void:
 	for container in item_containers:
@@ -295,21 +194,3 @@ func get_file_progress(path: String, item: TreeItem):
 			item.set_custom_color(0, Color.CYAN)
 		else:
 			item.set_custom_color(0, Color.GREEN.lerp(Color.RED, empty / all))
-
-class ClassData:
-	var name: String
-	var brief_description := MemberData.new()
-	var description := MemberData.new()
-	var members: Array[MemberData]
-	
-	class MemberData:
-		var category: String
-		var name: String
-		var description: String
-		var return_type: String
-		var arguments: Array[Array]
-		var description_tabs: int
-		var line_range: Vector2i
-		
-		func _to_string() -> String:
-			return str(category, "/", name)

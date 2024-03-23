@@ -232,7 +232,7 @@ layout_mode = 2
 [node name="FileDialog" type="FileDialog" parent="."]
 unique_name_in_owner = true
 title = "Open a Directory"
-ok_button_text = "Wybierz bieżący katalog"
+ok_button_text = "Select Current Folder"
 file_mode = 2
 access = 2
 
@@ -247,7 +247,7 @@ one_shot = true
 
 [connection signal="pressed" from="VBoxContainer2/Button" to="." method="refresh_files"]
 [connection signal="pressed" from="VBoxContainer2/Button4" to="." method="validate"]
-[connection signal="item_selected" from="VBoxContainer2/FileTree" to="." method="doc_selected"]
+[connection signal="item_selected" from="VBoxContainer2/FileTree" to="." method="doc_selected" flags=3]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer/Button" to="." method="goto_next_empty"]
 [connection signal="dir_selected" from="FileDialog" to="." method="on_dir_selected"]
 [connection signal="visibility_changed" from="AcceptDialog" to="." method="accept_closed"]

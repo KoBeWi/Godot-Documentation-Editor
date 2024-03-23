@@ -29,7 +29,7 @@ func parse_file(path: String):
 				new_member.type = Member.Type.CONSTANT
 			"theme_item":
 				new_member = Member.new()
-				new_member.type = Member.Type.METHOD
+				new_member.type = Member.Type.THEME_ITEM
 			"constructor":
 				new_member = MethodMember.new()
 				new_member.type = Member.Type.CONSTRUCTOR
@@ -37,7 +37,7 @@ func parse_file(path: String):
 				new_member = MethodMember.new()
 				new_member.type = Member.Type.OPERATOR
 			"annotation":
-				new_member = Member.new()
+				new_member = MethodMember.new()
 				new_member.type = Member.Type.ANNOTATION
 		
 		if new_member:
@@ -48,16 +48,118 @@ func parse_file(path: String):
 			else:
 				members.append(new_member)
 
+func store(file: FileAccess):
+	var indent: int
+	file.store_line("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>")
+	store_header(file, indent, top_member.get_type_string(), top_member.attributes)
+	
+	indent += 1
+	
+	store_header(file, indent, "brief_description")
+	store_description(file, indent, top_member.brief_description)
+	store_end_header(file, indent, "brief_description")
+	
+	store_header(file, indent, "description")
+	store_description(file, indent, top_member.description)
+	store_end_header(file, indent, "description")
+	
+	store_header(file, indent, "tutorials")
+	for tutorial: String in top_member.tutorials:
+		store_line(file, indent + 1, "<link title=\"%s\">%s</link>" % [tutorial.xml_escape(true), top_member.tutorials[tutorial].xml_escape()])
+	store_end_header(file, indent, "tutorials")
+	
+	var current_group: String
+	for member in members:
+		var new_group := member.get_type_string()
+		if new_group != current_group:
+			indent -= 1
+			if current_group.is_empty():
+				indent += 1
+			else:
+				store_end_header(file, indent, current_group + "s")
+			
+			current_group = new_group
+			store_header(file, indent, current_group + "s")
+			
+			indent += 1
+		
+		store_member(file, indent, member)
+	
+	indent -= 1
+	if not current_group.is_empty():
+		store_end_header(file, indent, current_group + "s")
+	
+	indent -= 1
+	store_end_header(file, indent, top_member.get_type_string())
+
+func store_line(file: FileAccess, indent: int, string: String):
+	file.store_line("\t".repeat(indent) + string)
+
+func store_header(file: FileAccess, indent: int, name: String, attributes: Dictionary = {}, closed := false):
+	var bits: PackedStringArray
+	bits.append("<" + name)
+	for attribute: String in attributes:
+		bits.append("%s=\"%s\"" % [attribute.xml_escape(true), attributes[attribute].xml_escape(true)])
+	
+	if closed:
+		store_line(file, indent, " ".join(bits) + " />")
+	else:
+		store_line(file, indent, " ".join(bits) + ">")
+
+func store_end_header(file: FileAccess, indent: int, name: String):
+	store_header(file, indent, "/" + name)
+
+func store_member(file: FileAccess, indent: int, member: Member):
+	var is_override := "overrides" in member.attributes
+	store_header(file, indent, member.get_type_string(), member.attributes, is_override)
+	if is_override:
+		return
+	
+	if member is MethodMember:
+		indent += 1
+		if not member.return_type.is_empty():
+			store_header(file, indent, "return", member.return_type, true)
+		
+		for param in member.params:
+			store_header(file, indent, "param", param.attributes, true)
+		
+		store_header(file, indent, "description")
+		store_description(file, indent, member.description)
+		store_end_header(file, indent, "description")
+		indent -= 1
+	elif member is ParameterMember:
+		indent += 1
+		for param in member.params:
+			store_header(file, indent, "param", param.attributes, true)
+		
+		store_header(file, indent, "description")
+		store_description(file, indent, member.description)
+		store_end_header(file, indent, "description")
+		indent -= 1
+	else:
+		store_description(file, indent, member.description)
+	
+	store_end_header(file, indent, member.get_type_string())
+
+func store_description(file: FileAccess, indent: int, text: PackedStringArray):
+	for line in text:
+		if line.strip_edges().is_empty():
+			file.store_line("")
+		else:
+			store_line(file, indent + 1, line.xml_escape())
+
 class Member:
 	enum Type { CLASS, MEMBER, METHOD, SIGNAL, CONSTANT, THEME_ITEM, CONSTRUCTOR, OPERATOR, ANNOTATION }
 	
 	var type: Type
 	var attributes: Dictionary
-	var description: String
+	var description: PackedStringArray
 	
 	func initialize(xml: XMLParser):
 		attributes = get_attributes(xml)
-		description = extract_description(xml, get_type_string())
+		
+		if not "overrides" in attributes:
+			description = extract_description(xml, get_type_string())
 	
 	func get_name() -> String:
 		return attributes.get("name", "<unnamed>")
@@ -92,22 +194,34 @@ class Member:
 		
 		return ret
 	
-	func skip_to_next_element(xml: XMLParser):
+	func skip_to_next_element(xml: XMLParser, expected := ""):
 		xml.read()
 		
 		while xml.get_node_type() != XMLParser.NODE_ELEMENT:
+			if not expected.is_empty() and xml.get_node_type() == XMLParser.NODE_ELEMENT_END and xml.get_node_name() != expected:
+				break
+			
 			xml.read()
 	
-	func extract_description(xml: XMLParser, node_name := "description") -> String:
-		var ret: String
+	func extract_description(xml: XMLParser, node_name := "description") -> PackedStringArray:
+		var text: String
 		check_node_name(xml, node_name)
 		
 		xml.read()
-		check_node_type(xml, XMLParser.NODE_TEXT)
-		ret = xml.get_node_data()
+		if xml.get_node_type() == XMLParser.NODE_TEXT:
+			text = xml.get_node_data()
+			xml.read()
 		
-		xml.read()
 		check_node_type(xml, XMLParser.NODE_ELEMENT_END)
+		
+		var ret := text.split("\n")
+		if ret.size() <= 2:
+			return []
+		
+		ret = ret.slice(1, ret.size() - 1)
+		var indent := "\t".repeat(ret[0].count("\t"))
+		for i in ret.size():
+			ret[i] = ret[i].trim_prefix(indent)
 		
 		return ret
 	
@@ -127,17 +241,33 @@ class ClassMember extends Member:
 	func _init() -> void:
 		type = Type.CLASS
 	
-	var brief_description: String
+	var brief_description: PackedStringArray
 	var tutorials: Dictionary
 	
 	func initialize(xml: XMLParser):
 		attributes = get_attributes(xml)
-		
 		skip_to_next_element(xml)
-		brief_description = extract_description(xml, "brief_description")
 		
-		skip_to_next_element(xml)
-		description = extract_description(xml, "description")
+		if xml.get_node_name() == "brief_description":
+			brief_description = extract_description(xml, "brief_description")
+			skip_to_next_element(xml)
+		
+		if xml.get_node_name() == "description":
+			description = extract_description(xml, "description")
+			skip_to_next_element(xml)
+		
+		if xml.get_node_name() == "tutorials":
+			skip_to_next_element(xml, "link")
+			
+			for i in 1000:
+				if xml.get_node_name() != "link":
+					break
+				
+				var link_data := get_attributes(xml)
+				xml.read()
+				tutorials[link_data.get("title", "")] = xml.get_node_data()
+				
+				skip_to_next_element(xml, "link")
 
 class ParameterMember extends Member:
 	var params: Array[Parameter]
@@ -150,30 +280,27 @@ class ParameterMember extends Member:
 	func get_parameters(xml: XMLParser):
 		for i in 1000:
 			if xml.get_node_name() == "param":
-				var attrs := get_attributes(xml)
 				var param := Parameter.new()
-				param.name = attrs.get("name", "<unnamed>")
-				param.name = attrs.get("type", "unknown")
+				param.attributes = get_attributes(xml)
+				params.append(param)
 			elif xml.get_node_name() == "description":
 				break
 			
 			skip_to_next_element(xml)
 	
 	class Parameter:
-		var name: String
-		var type: String
+		var attributes: Dictionary
 
 class MethodMember extends ParameterMember:
-	var return_type: String
+	var return_type: Dictionary
 	
 	func initialize(xml: XMLParser):
 		attributes = get_attributes(xml)
 		
 		skip_to_next_element(xml)
-		check_node_name(xml, "return")
-		var attrs := get_attributes(xml)
-		return_type = attrs.get("type", "unknown")
+		if xml.get_node_name() == "return":
+			return_type = get_attributes(xml)
+			skip_to_next_element(xml)
 		
-		skip_to_next_element(xml)
 		get_parameters(xml)
 		description = extract_description(xml)

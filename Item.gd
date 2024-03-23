@@ -1,37 +1,33 @@
 extends Control
 
-var member
+var member: DocData.Member
 
 func _ready() -> void:
 	$Description.text_changed.connect(update_member)
 
-func set_member(m):
+func set_member(m: DocData.Member, field := &"description"):
 	member = m
-	set_item(m.name, m.description, m.arguments, m.return_type)
-
-func set_item(item: String, description: String, arguments := [], return_type := ""):
-	if item.is_empty():
-		%Label.hide()
-	else:
-		var text := PackedStringArray([item])
-		
-		if not arguments.is_empty():
-			text.append("(")
-			
-			var subtext: PackedStringArray
-			for argument in arguments:
-				subtext.append("%s: %s" % argument)
-			text.append(", ".join(subtext))
-			
-			text.append(")")
-		
-		if not return_type.is_empty():
-			text.append(" -> ")
-			text.append(return_type)
-		
+	
+	if not member is DocData.ClassMember: 
+		var text := PackedStringArray([member.get_name()])
 		%Label.text = "".join(text)
 	
-	$Description.text = description
+	#if not arguments.is_empty():
+		#text.append("(")
+		#
+		#var subtext: PackedStringArray
+		#for argument in arguments:
+			#subtext.append("%s: %s" % argument)
+		#text.append(", ".join(subtext))
+		#
+		#text.append(")")
+	#
+	#if not return_type.is_empty():
+		#text.append(" -> ")
+		#text.append(return_type)
+	
+	
+	$Description.text = "\n".join(member.get(field))
 	refresh_color()
 	
 	if is_inside_tree(): ## FIXME: this should exist
