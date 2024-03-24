@@ -1,12 +1,19 @@
 extends Control
 
+@onready var description: TextEdit = $Description
+
 var member: DocData.Member
+var field: StringName
 
 func _ready() -> void:
-	$Description.text_changed.connect(update_member)
+	if member:
+		description.text = "\n".join(member.get(field))
+		refresh_color()
+	description.text_changed.connect(update_member)
 
-func set_member(m: DocData.Member, field := &"description"):
+func set_member(m: DocData.Member, f := &"description"):
 	member = m
+	field = f
 	
 	if not member is DocData.ClassMember: 
 		var text := PackedStringArray([member.get_name()])
@@ -26,24 +33,19 @@ func set_member(m: DocData.Member, field := &"description"):
 		#text.append(" -> ")
 		#text.append(return_type)
 	
-	
-	$Description.text = "\n".join(member.get(field))
-	refresh_color()
-	
-	if is_inside_tree(): ## FIXME: this should exist
-		await get_tree().create_timer(0.2).timeout
-		$Description.text = $Description.text
-		$Description.update_minimum_size()
-		$Description.queue_redraw()
+	if is_node_ready():
+		description.text = "\n".join(member.get(field))
+		refresh_color()
 
 func refresh_color():
-	modulate = Color.RED if $Description.text.is_empty() else Color.WHITE
+	modulate = Color.RED if description.text.is_empty() else Color.WHITE
 
 func connect_changed(target: Callable):
-	$Description.text_changed.connect(target)
+	description.text_changed.connect(target)
 
 func update_member():
-	member.description = $Description.text
+	member.set(field, description.text.split("\n"))
+	print(member)
 
 func edit():
-	$Description.grab_focus()
+	description.grab_focus()

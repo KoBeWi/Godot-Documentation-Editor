@@ -5,6 +5,7 @@ const CONFIG_PATH = "user://config.cfg"
 @onready var file_dialog: FileDialog = %FileDialog
 @onready var accept_dialog: AcceptDialog = %AcceptDialog
 @onready var file_tree: Tree = %FileTree
+@onready var save_timer: Timer = $SaveTimer
 
 @onready var item_containers := [%Constructors, %Operators, %Methods, %Members, %Signals, %Constants, %ThemeItems, %Annotations]
 
@@ -15,8 +16,8 @@ var doc_data: DocData
 
 func _ready() -> void:
 	%Contentainer.hide()
-	%BriefDescription.connect_changed($SaveTimer.start)
-	%Description.connect_changed($SaveTimer.start)
+	%BriefDescription.connect_changed(save_timer.start)
+	%Description.connect_changed(save_timer.start)
 	
 	var config := ConfigFile.new()
 	if config.load(CONFIG_PATH) != OK:
@@ -125,9 +126,9 @@ func get_container_label(container: Node) -> Control:
 
 func add_member(member: DocData.Member, container: Node):
 	var item := preload("res://Item.tscn").instantiate()
-	item.connect_changed($SaveTimer.start)
 	item.set_member(member)
 	container.add_child(item)
+	item.connect_changed(save_timer.start)
 
 func save_current() -> void:
 	if current_file.is_empty():
