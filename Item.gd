@@ -15,23 +15,31 @@ func set_member(m: DocData.Member, f := &"description"):
 	member = m
 	field = f
 	
-	if not member is DocData.ClassMember: 
-		var text := PackedStringArray([member.get_name()])
-		%Label.text = "".join(text)
+	var text: PackedStringArray
+	text.append("[color=5ac4da]")
 	
-	#if not arguments.is_empty():
-		#text.append("(")
-		#
-		#var subtext: PackedStringArray
-		#for argument in arguments:
-			#subtext.append("%s: %s" % argument)
-		#text.append(", ".join(subtext))
-		#
-		#text.append(")")
-	#
-	#if not return_type.is_empty():
-		#text.append(" -> ")
-		#text.append(return_type)
+	if not member is DocData.ClassMember: 
+		text.append(member.get_name())
+	text.append("[/color]")
+	
+	if member is DocData.ParameterMember:
+		text.append("(")
+		
+		var subtext: PackedStringArray
+		for argument in member.params:
+			Color(0.24313725531101, 0.77254903316498, 0.60784316062927).to_html(false)
+			subtext.append("[color=889fc8][url=param:{name}]{name}[/url][/color]: [color=3ec59b]{type}[/color]".format(argument.attributes))
+		text.append(", ".join(subtext))
+		
+		text.append(")")
+		
+		if member is DocData.MethodMember:
+			text.append(" -> [color=3ec59b]{type}[/color]".format(member.return_type))
+	else:
+		if "type" in member.attributes:
+			text.append(": [color=3ec59b]{type}[/color]".format(member.attributes))
+	
+	%Label.text = "".join(text)
 	
 	if is_node_ready():
 		description.text = "\n".join(member.get(field))
@@ -45,7 +53,14 @@ func connect_changed(target: Callable):
 
 func update_member():
 	member.set(field, description.text.split("\n"))
-	print(member)
 
 func edit():
 	description.grab_focus()
+
+func _on_label_meta_clicked(meta: Variant) -> void:
+	if not description.has_focus():
+		return
+	
+	if meta is String:
+		if meta.begins_with("param"):
+			description.insert_text_at_caret("[param %s]" % meta.get_slice(":", 1))

@@ -3,22 +3,24 @@
 [ext_resource type="Script" path="res://Item.gd" id="1_5voqr"]
 
 [node name="Item" type="VBoxContainer"]
-offset_right = 40.0
-offset_bottom = 40.0
+offset_right = 696.0
+offset_bottom = 62.0
 script = ExtResource("1_5voqr")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
-theme_override_constants/margin_left = 50
+theme_override_constants/margin_left = 30
 
-[node name="Label" type="Label" parent="MarginContainer"]
+[node name="Label" type="RichTextLabel" parent="MarginContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 0, 1)
+bbcode_enabled = true
+fit_content = true
 
 [node name="Description" type="TextEdit" parent="."]
 layout_mode = 2
 wrap_mode = 1
 scroll_fit_content_height = true
 
+[connection signal="meta_clicked" from="MarginContainer/Label" to="." method="_on_label_meta_clicked"]
 [connection signal="text_changed" from="Description" to="." method="refresh_color"]

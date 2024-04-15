@@ -158,6 +158,7 @@ horizontal_alignment = 1
 [node name="Constructors" type="VBoxContainer" parent="PanelContainer/VBoxContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_constants/separation = 20
 
 [node name="Label10" type="Label" parent="PanelContainer/VBoxContainer/Contentainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -168,6 +169,7 @@ horizontal_alignment = 1
 [node name="Operators" type="VBoxContainer" parent="PanelContainer/VBoxContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_constants/separation = 20
 
 [node name="Label9" type="Label" parent="PanelContainer/VBoxContainer/Contentainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -178,6 +180,7 @@ horizontal_alignment = 1
 [node name="Methods" type="VBoxContainer" parent="PanelContainer/VBoxContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_constants/separation = 20
 
 [node name="Label5" type="Label" parent="PanelContainer/VBoxContainer/Contentainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -188,6 +191,7 @@ horizontal_alignment = 1
 [node name="Members" type="VBoxContainer" parent="PanelContainer/VBoxContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_constants/separation = 20
 
 [node name="Label7" type="Label" parent="PanelContainer/VBoxContainer/Contentainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -198,6 +202,7 @@ horizontal_alignment = 1
 [node name="Signals" type="VBoxContainer" parent="PanelContainer/VBoxContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_constants/separation = 20
 
 [node name="Label6" type="Label" parent="PanelContainer/VBoxContainer/Contentainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -208,6 +213,7 @@ horizontal_alignment = 1
 [node name="Constants" type="VBoxContainer" parent="PanelContainer/VBoxContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_constants/separation = 20
 
 [node name="Label8" type="Label" parent="PanelContainer/VBoxContainer/Contentainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -218,6 +224,7 @@ horizontal_alignment = 1
 [node name="ThemeItems" type="VBoxContainer" parent="PanelContainer/VBoxContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_constants/separation = 20
 
 [node name="Label12" type="Label" parent="PanelContainer/VBoxContainer/Contentainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -228,6 +235,7 @@ horizontal_alignment = 1
 [node name="Annotations" type="VBoxContainer" parent="PanelContainer/VBoxContainer/Contentainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_constants/separation = 20
 
 [node name="FileDialog" type="FileDialog" parent="."]
 unique_name_in_owner = true
