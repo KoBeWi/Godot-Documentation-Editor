@@ -142,6 +142,9 @@ func store_member(file: FileAccess, indent: int, member: Member):
 	store_end_header(file, indent, member.get_type_string())
 
 func store_description(file: FileAccess, indent: int, text: PackedStringArray):
+	if text.is_empty() or (text.size() == 1 and text[0].is_empty()):
+		return
+	
 	for line in text:
 		if line.strip_edges().is_empty():
 			file.store_line("")

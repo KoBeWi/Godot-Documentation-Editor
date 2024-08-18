@@ -11,16 +11,38 @@ script = ExtResource("1_5voqr")
 layout_mode = 2
 theme_override_constants/margin_left = 30
 
-[node name="Label" type="RichTextLabel" parent="MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="RichTextLabel" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 bbcode_enabled = true
 fit_content = true
+
+[node name="DeprecatedButton" type="CheckButton" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Deprecated"
+
+[node name="CheckButton2" type="CheckButton" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "Experimental"
+
+[node name="DeprecatedMessage" type="TextEdit" parent="."]
+visible = false
+layout_mode = 2
+placeholder_text = "Deprecated message."
+wrap_mode = 1
+scroll_fit_content_height = true
 
 [node name="Description" type="TextEdit" parent="."]
 layout_mode = 2
 wrap_mode = 1
 scroll_fit_content_height = true
 
-[connection signal="meta_clicked" from="MarginContainer/Label" to="." method="_on_label_meta_clicked"]
+[connection signal="meta_clicked" from="MarginContainer/HBoxContainer/Label" to="." method="_on_label_meta_clicked"]
+[connection signal="toggled" from="MarginContainer/HBoxContainer/DeprecatedButton" to="." method="toggle_deprecated"]
+[connection signal="text_changed" from="DeprecatedMessage" to="." method="refresh_color"]
 [connection signal="text_changed" from="Description" to="." method="refresh_color"]

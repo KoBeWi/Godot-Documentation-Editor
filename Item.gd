@@ -1,15 +1,31 @@
 extends Control
 
 @onready var description: TextEdit = $Description
+@onready var deprecated_message: TextEdit = $DeprecatedMessage
+@onready var deprecated_button: CheckButton = %DeprecatedButton
 
 var member: DocData.Member
 var field: StringName
 
 func _ready() -> void:
-	if member:
-		description.text = "\n".join(member.get(field))
-		refresh_color()
+	description.syntax_highlighter = preload("res://Syntaxer.gd").new()
 	description.text_changed.connect(update_member)
+	
+	deprecated_message.syntax_highlighter = preload("res://Syntaxer.gd").new()
+	deprecated_message.text_changed.connect(update_member)
+	
+	if not member:
+		return
+	
+	description.text = "\n".join(member.get(field))
+	
+	var deprecated: String = member.attributes.get("deprecated", "")
+	if not deprecated.is_empty():
+		deprecated_button.set_pressed_no_signal(true)
+		deprecated_message.show()
+		deprecated_message.text = deprecated
+	
+	refresh_color()
 
 func set_member(m: DocData.Member, f := &"description"):
 	member = m
@@ -46,13 +62,21 @@ func set_member(m: DocData.Member, f := &"description"):
 		refresh_color()
 
 func refresh_color():
-	modulate = Color.RED if description.text.is_empty() else Color.WHITE
+	var is_empty := description.text.is_empty() and (not deprecated_button.button_pressed or deprecated_message.text.is_empty())
+	description.modulate = Color.RED if is_empty else Color.WHITE
 
 func connect_changed(target: Callable):
 	description.text_changed.connect(target)
+	deprecated_message.text_changed.connect(target)
+	deprecated_button.pressed.connect(target)
 
 func update_member():
 	member.set(field, description.text.split("\n"))
+	
+	if deprecated_button.button_pressed:
+		member.attributes["deprecated"] = deprecated_message.text
+	else:
+		member.attributes.erase("deprecated")
 
 func edit():
 	description.grab_focus()
@@ -64,3 +88,8 @@ func _on_label_meta_clicked(meta: Variant) -> void:
 	if meta is String:
 		if meta.begins_with("param"):
 			description.insert_text_at_caret("[param %s]" % meta.get_slice(":", 1))
+
+func toggle_deprecated(toggled_on: bool) -> void:
+	deprecated_message.visible = toggled_on
+	update_member()
+	refresh_color()

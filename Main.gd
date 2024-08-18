@@ -172,6 +172,7 @@ func get_file_progress(path: String, item: TreeItem):
 	var pre_xml := XMLParser.new()
 	pre_xml.open(path)
 	
+	## TODO: count deprecated
 	while pre_xml.read() != ERR_FILE_EOF:
 		match pre_xml.get_node_type():
 			XMLParser.NODE_ELEMENT:
